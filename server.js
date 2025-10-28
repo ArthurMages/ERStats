@@ -8,7 +8,7 @@ const PORT = 3001;
 app.use(cors());
 app.use(express.json());
 
-const API_KEY = 'LP52buVSrE5NraMONoHOD3EltFlZo6D76rFbg81v';
+const API_KEY = process.env.REACT_APP_BSER_API_KEY;
 const BSER_API = 'https://open-api.bser.io';
 
 // Rate limiting
