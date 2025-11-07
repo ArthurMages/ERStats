@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import SearchBar from '../components/SearchBar';
 import PlayerCard from '../components/PlayerCard';
 import PlayerStats from '../components/PlayerStats';
@@ -28,16 +29,25 @@ const getMostPlayedCharacter = (gamesData) => {
 };
 
 const Home = () => {
+  const { nickname } = useParams();
+  const navigate = useNavigate();
   const [playerData, setPlayerData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSearch = async (nickname) => {
+  useEffect(() => {
+    if (nickname) {
+      handleSearch(nickname);
+    }
+  }, [nickname]);
+
+  const handleSearch = async (searchNickname) => {
     setLoading(true);
     setError('');
     try {
-      const fullData = await getPlayerFullData(nickname);
+      const fullData = await getPlayerFullData(searchNickname);
       setPlayerData(fullData);
+      navigate(`/player/${searchNickname}`, { replace: true });
     } catch (err) {
       setError('Joueur non trouvé');
       setPlayerData(null);
@@ -47,93 +57,99 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {!playerData ? (
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-8 sm:mb-12">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-black mb-4">
-                ER Stats
-              </h1>
-              <p className="text-gray-600 text-lg sm:text-xl mb-6 sm:mb-8 px-4">Statistiques détaillées pour Eternal Return</p>
-              <SearchBar onSearch={handleSearch} />
+    <div className="min-h-screen bg-gradient-to-br from-black via-red-950 to-black">
+      {!playerData ? (
+        <>
+          {/* Hero Section */}
+          <div className="bg-gradient-to-r from-red-700 to-black shadow-2xl">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+              <div className="text-center">
+                <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6">
+                  ER Stats
+                </h1>
+                <p className="text-red-100 text-xl mb-8">Statistiques détaillées pour Eternal Return</p>
+                <SearchBar onSearch={handleSearch} />
+              </div>
             </div>
-            
-            <div className="bg-white rounded-lg p-6 sm:p-8 shadow-sm border border-gray-200">
-              <h2 className="text-xl sm:text-2xl font-bold text-black mb-4 sm:mb-6">Fonctionnalités</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm font-bold">✓</span>
+          </div>
+          
+          {/* Features Section */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div className="bg-black/30 backdrop-blur-sm rounded-2xl border border-red-500/30 p-8">
+              <h2 className="text-3xl font-bold text-white mb-8 text-center">Fonctionnalités</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-red-800 rounded-xl flex items-center justify-center">
+                    <span className="text-white text-lg font-bold">📊</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-black">Statistiques détaillées</h3>
-                    <p className="text-gray-600 text-sm">Winrate, MMR, historique complet</p>
+                    <h3 className="font-bold text-white text-lg mb-2">Statistiques détaillées</h3>
+                    <p className="text-white/70">Winrate, RP, historique complet des parties</p>
                   </div>
                 </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm font-bold">✓</span>
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-red-800 rounded-xl flex items-center justify-center">
+                    <span className="text-white text-lg font-bold">🎮</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-black">Modes de jeu</h3>
-                    <p className="text-gray-600 text-sm">Normal et Classé séparés</p>
+                    <h3 className="font-bold text-white text-lg mb-2">Modes de jeu</h3>
+                    <p className="text-white/70">Normal et Classé avec données séparées</p>
                   </div>
                 </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm font-bold">✓</span>
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-red-800 rounded-xl flex items-center justify-center">
+                    <span className="text-white text-lg font-bold">📈</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-black">Historique récent</h3>
-                    <p className="text-gray-600 text-sm">Dernières parties avec détails</p>
+                    <h3 className="font-bold text-white text-lg mb-2">Classements</h3>
+                    <p className="text-white/70">Top joueurs par mode et saison</p>
                   </div>
                 </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm font-bold">✓</span>
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-red-800 rounded-xl flex items-center justify-center">
+                    <span className="text-white text-lg font-bold">⚡</span>
                   </div>
                   <div>
-                    <h3 className="font-semibold text-black">Données temps réel</h3>
-                    <p className="text-gray-600 text-sm">API officielle Eternal Return</p>
+                    <h3 className="font-bold text-white text-lg mb-2">Données temps réel</h3>
+                    <p className="text-white/70">API officielle Eternal Return</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        ) : (
-          <div className="max-w-7xl mx-auto">
-            <div className="mb-4 sm:mb-6">
-              <SearchBar onSearch={handleSearch} />
-            </div>
-            <div className="space-y-4 sm:space-y-6">
-              <PlayerCard 
-                player={playerData.user} 
-                mostPlayedCharacter={getMostPlayedCharacter(playerData.games)}
-              />
-              <PlayerStats playerData={playerData} />
-              <GameHistory playerData={playerData} />
-            </div>
+        </>
+      ) : (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="mb-6">
+            <SearchBar onSearch={handleSearch} />
           </div>
-        )}
+          <div className="space-y-6">
+            <PlayerCard 
+              player={playerData.user} 
+              mostPlayedCharacter={getMostPlayedCharacter(playerData.games)}
+            />
+            <PlayerStats playerData={playerData} />
+            <GameHistory playerData={playerData} />
+          </div>
+        </div>
+      )}
 
-        {loading && (
-          <div className="flex justify-center items-center py-12">
-            <div className="flex items-center space-x-3">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-red-500"></div>
-              <span className="text-gray-600">Chargement des données...</span>
-            </div>
+      {loading && (
+        <div className="flex justify-center items-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-red-500 mx-auto mb-6"></div>
+            <p className="text-white text-xl">Chargement des données...</p>
           </div>
-        )}
+        </div>
+      )}
 
-        {error && (
-          <div className="text-center mb-6">
-            <div className="inline-block bg-red-50 border border-red-200 text-red-600 px-6 py-3 rounded-lg">
-              {error}
-            </div>
+      {error && (
+        <div className="text-center py-8">
+          <div className="inline-block bg-red-900/30 border border-red-500/50 text-red-300 px-6 py-3 rounded-lg backdrop-blur-sm">
+            {error}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

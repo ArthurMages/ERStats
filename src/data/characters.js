@@ -13,7 +13,7 @@ export const characters = {
   56: "Isaac", 57: "Tazia", 58: "Irem", 59: "Theodore", 60: "Leni",
   61: "Katja", 62: "Luka", 63: "Vanya", 64: "Darko", 65: "Bianca",
   66: "Chloe", 67: "Johann", 68: "Abigail", 69: "Alonso", 70: "Rosalio",
-  71: "Zahir", 72: "Camilo", 73: "Celine", 74: "Echion", 75: "Mai",
-  76: "Aiden", 77: "Laura", 78: "Tia", 79: "Felix", 80: "Elena",
-  81: "Priya", 82: "Adina", 83: "Markus"
+  71: "Kenneth", 72: "Katja", 73: "Acelino", 74: "Darko", 75: "Hohang",
+  76: "Garnet", 77: "Lyanh", 78: "Haze", 79: "Justyna", 80: "Leni",
+  81: "Xuelin", 82: "Shorin", 83: "Henry"
 };

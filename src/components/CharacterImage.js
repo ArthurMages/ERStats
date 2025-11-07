@@ -1,35 +1,43 @@
-import { useState } from 'react';
-import { getCharacterImageWithFallback } from '../utils/characterImages';
-
 const CharacterImage = ({ characterId, characterName, size = 'md', className = '' }) => {
-  const [imageError, setImageError] = useState(false);
-  const { src, alt, fallback } = getCharacterImageWithFallback(characterId, characterName);
-  
-  const sizeClasses = {
-    sm: 'w-8 h-8',
-    md: 'w-12 h-12',
-    lg: 'w-16 h-16',
-    xl: 'w-20 h-20'
-  };
-
-  if (imageError || !src) {
+  if (!characterId || !characterName) {
     return (
-      <div className={`${sizeClasses[size]} bg-red-500 rounded-full flex items-center justify-center ${className}`}>
-        <span className="text-white font-bold text-xs">
-          {fallback}
-        </span>
+      <div className={`bg-gray-300 rounded-full flex items-center justify-center ${getSizeClasses(size)} ${className}`}>
+        <span className="text-gray-600 font-bold">?</span>
       </div>
     );
   }
 
+  const imageUrl = `/images/characters/CharCommunity_${characterName}_S000.png`;
+
   return (
-    <img
-      src={src}
-      alt={alt}
-      className={`${sizeClasses[size]} rounded-full object-cover ${className}`}
-      onError={() => setImageError(true)}
-    />
+    <div className={`rounded-full overflow-hidden bg-gray-100 ${getSizeClasses(size)} ${className}`}>
+      <img 
+        src={imageUrl}
+        alt={characterName}
+        className="w-full h-full object-cover"
+        onError={(e) => {
+          e.target.style.display = 'none';
+          e.target.nextSibling.style.display = 'flex';
+        }}
+      />
+      <div className="w-full h-full bg-gray-300 rounded-full flex items-center justify-center" style={{display: 'none'}}>
+        <span className="text-gray-600 font-bold text-xs">
+          {characterName?.charAt(0).toUpperCase()}
+        </span>
+      </div>
+    </div>
   );
+};
+
+const getSizeClasses = (size) => {
+  switch (size) {
+    case 'xs': return 'w-6 h-6 min-w-[24px] min-h-[24px]';
+    case 'sm': return 'w-8 h-8 min-w-[32px] min-h-[32px]';
+    case 'md': return 'w-12 h-12';
+    case 'lg': return 'w-16 h-16';
+    case 'xl': return 'w-20 h-20';
+    default: return 'w-12 h-12';
+  }
 };
 
 export default CharacterImage;

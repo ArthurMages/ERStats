@@ -1,110 +1,121 @@
+import { useState } from 'react';
+
 const PlayerStats = ({ playerData }) => {
+  const [activeMode, setActiveMode] = useState('ranked');
+  
   if (!playerData) return null;
 
-  const { stats, ranks } = playerData;
-  const rankedStats = stats?.ranked?.userStats?.[0];
-  const normalStats = stats?.normal?.userStats?.[0];
+  const { ranks, games } = playerData;
   const rankedRank = ranks?.ranked?.userRank;
+  const normalRank = ranks?.normal?.userRank;
 
-  const winrate = rankedStats?.totalGames ? (rankedStats.totalWins / rankedStats.totalGames) * 100 : 0;
-  const normalWinrate = normalStats?.totalGames ? (normalStats.totalWins / normalStats.totalGames) * 100 : 0;
+  const getRecentStats = (mode) => {
+    if (!games?.userGames) return null;
+    
+    const modeGames = games.userGames.filter(game => 
+      mode === 'ranked' ? game.matchingMode === 3 : game.matchingMode === 2
+    ).slice(0, 20);
+    
+    if (modeGames.length === 0) return null;
+    
+    const wins = modeGames.filter(game => game.gameRank === 1).length;
+    const top3 = modeGames.filter(game => game.gameRank <= 3).length;
+    const totalKills = modeGames.reduce((sum, game) => sum + (game.playerKill || 0), 0);
+    const totalAssists = modeGames.reduce((sum, game) => sum + (game.playerAssistant || 0), 0);
+    const avgRank = modeGames.reduce((sum, game) => sum + (game.gameRank || 18), 0) / modeGames.length;
+    
+    return {
+      totalGames: modeGames.length,
+      totalWins: wins,
+      top3Rate: (top3 / modeGames.length) * 100,
+      avgKills: totalKills / modeGames.length,
+      avgAssists: totalAssists / modeGames.length,
+      avgRank: avgRank
+    };
+  };
+
+  const currentStats = getRecentStats(activeMode);
+  const currentRank = activeMode === 'ranked' ? rankedRank : normalRank;
+  const winrate = currentStats?.totalGames ? (currentStats.totalWins / currentStats.totalGames) * 100 : 0;
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Overview Stats */}
-      <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 shadow-sm">
-        <h3 className="text-lg sm:text-xl font-bold text-black mb-4 sm:mb-6">Statistiques générales</h3>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          <div className="text-center">
-            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-black mb-1">{(rankedStats?.totalGames || 0) + (normalStats?.totalGames || 0)}</div>
-            <div className="text-xs sm:text-sm text-gray-600">Total parties</div>
+    <div className="bg-black/30 backdrop-blur-sm border border-red-500/30 rounded-2xl shadow-xl">
+      <div className="p-4 sm:p-6 border-b border-red-500/30">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="text-center sm:text-left">
+            <h3 className="text-lg sm:text-xl font-bold text-white">Statistiques</h3>
+            <p className="text-sm text-white/70 mt-1">20 dernières parties</p>
           </div>
-          <div className="text-center">
-            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600 mb-1">{(rankedStats?.totalWins || 0) + (normalStats?.totalWins || 0)}</div>
-            <div className="text-xs sm:text-sm text-gray-600">Total victoires</div>
-          </div>
-          <div className="text-center">
-            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-red-500 mb-1">
-              {Math.round(((rankedStats?.totalWins || 0) + (normalStats?.totalWins || 0)) / ((rankedStats?.totalGames || 0) + (normalStats?.totalGames || 0)) * 100) || 0}%
-            </div>
-            <div className="text-xs sm:text-sm text-gray-600">Winrate global</div>
-          </div>
-          <div className="text-center">
-            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-600 mb-1">{rankedRank?.mmr || 'N/A'}</div>
-            <div className="text-xs sm:text-sm text-gray-600">MMR Classé</div>
+          <div className="flex bg-white/10 rounded-lg p-1 mx-auto sm:mx-0">
+            <button
+              onClick={() => setActiveMode('ranked')}
+              className={`px-2 py-1 sm:px-3 rounded-md font-medium text-xs sm:text-sm transition-all ${
+                activeMode === 'ranked'
+                  ? 'bg-red-500 text-white shadow-sm'
+                  : 'text-white/70 hover:text-white'
+              }`}
+            >
+              Classé
+            </button>
+            <button
+              onClick={() => setActiveMode('normal')}
+              className={`px-2 py-1 sm:px-3 rounded-md font-medium text-xs sm:text-sm transition-all ${
+                activeMode === 'normal'
+                  ? 'bg-blue-500 text-white shadow-sm'
+                  : 'text-white/70 hover:text-white'
+              }`}
+            >
+              Normal
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-        {/* Ranked Stats */}
-        {rankedStats && (
-          <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
-              <h3 className="text-base sm:text-lg font-bold text-black">Mode Classé</h3>
-              <div className="px-3 py-1 bg-red-100 text-red-600 rounded-full text-xs sm:text-sm font-medium self-start sm:self-auto">
-                Rang #{rankedRank?.rank || 'N/A'}
-              </div>
+      {currentStats ? (
+        <div className="p-4 sm:p-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+            <div className="text-center">
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-1">{currentStats.totalGames || 0}</div>
+              <div className="text-xs sm:text-sm text-white/70">Parties jouées</div>
             </div>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Parties jouées</span>
-                <span className="font-bold text-black">{rankedStats.totalGames || 0}</span>
+            <div className="text-center">
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-400 mb-1">{currentStats.totalWins || 0}</div>
+              <div className="text-xs sm:text-sm text-white/70">Victoires</div>
+            </div>
+            <div className="text-center">
+              <div className={`text-xl sm:text-2xl lg:text-3xl font-bold mb-1 ${
+                currentStats.top3Rate >= 50 ? 'text-green-400' : 'text-red-400'
+              }`}>
+                {Math.round(currentStats.top3Rate)}%
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Victoires</span>
-                <span className="font-bold text-green-600">{rankedStats.totalWins || 0}</span>
+              <div className="text-xs sm:text-sm text-white/70">Top 3</div>
+            </div>
+            <div className="text-center">
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-400 mb-1">
+                {currentStats.avgRank.toFixed(1)}
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Taux de victoire</span>
-                <span className={`font-bold ${winrate >= 50 ? 'text-green-600' : 'text-red-500'}`}>
-                  {Math.round(winrate)}%
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className={`h-2 rounded-full ${winrate >= 50 ? 'bg-green-500' : 'bg-red-500'}`}
-                  style={{ width: `${Math.min(winrate, 100)}%` }}
-                ></div>
-              </div>
+              <div className="text-xs sm:text-sm text-white/70">Rang moyen</div>
             </div>
           </div>
-        )}
-        
-        {/* Normal Stats */}
-        {normalStats && (
-          <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
-              <h3 className="text-base sm:text-lg font-bold text-black">Mode Normal</h3>
-              <div className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs sm:text-sm font-medium self-start sm:self-auto">
-                Rang moyen: {normalStats.averageRank?.toFixed(1) || 'N/A'}
-              </div>
+          
+          <div className="mt-4 sm:mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:gap-6">
+            <div className="text-center">
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-orange-400 mb-1">{currentStats.avgKills.toFixed(1)}</div>
+              <div className="text-xs sm:text-sm text-white/70">Éliminations/partie</div>
             </div>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Parties jouées</span>
-                <span className="font-bold text-black">{normalStats.totalGames || 0}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Victoires</span>
-                <span className="font-bold text-green-600">{normalStats.totalWins || 0}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-600">Taux de victoire</span>
-                <span className={`font-bold ${normalWinrate >= 50 ? 'text-green-600' : 'text-red-500'}`}>
-                  {Math.round(normalWinrate)}%
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className={`h-2 rounded-full ${normalWinrate >= 50 ? 'bg-green-500' : 'bg-red-500'}`}
-                  style={{ width: `${Math.min(normalWinrate, 100)}%` }}
-                ></div>
-              </div>
+            <div className="text-center">
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-400 mb-1">{currentStats.avgAssists.toFixed(1)}</div>
+              <div className="text-xs sm:text-sm text-white/70">Assists/partie</div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className="p-4 sm:p-6">
+          <div className="text-center py-8">
+            <p className="text-white/70">Aucune donnée disponible pour le mode {activeMode === 'ranked' ? 'Classé' : 'Normal'}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

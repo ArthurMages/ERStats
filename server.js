@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
@@ -9,9 +10,9 @@ app.use(cors());
 app.use(express.json());
 
 // Validation de la clé API
-const API_KEY = process.env.BSER_API_KEY;
+const API_KEY = process.env.REACT_APP_BSER_API_KEY;
 if (!API_KEY) {
-  console.error('❌ ERREUR: BSER_API_KEY n\'est pas définie dans les variables d\'environnement');
+  console.error('❌ ERREUR: REACT_APP_BSER_API_KEY n\'est pas définie dans les variables d\'environnement');
   process.exit(1);
 }
 
@@ -53,7 +54,7 @@ class RateLimiter {
       this.lastRequestTime = Date.now();
       
       try {
-        const result = await fn();
+        const result = await task.fn();
         task.resolve(result);
       } catch (error) {
         // Retry logic pour les erreurs 429 (rate limit)
@@ -118,14 +119,12 @@ app.use('/api', async (req, res) => {
       return res.json(cachedData);
     }
     
-    const response = await rateLimiter.execute(async () => {
-      return await axios.get(url, {
-        headers: {
-          'x-api-key': API_KEY
-        },
-        timeout: 15000,
-        validateStatus: (status) => status < 500 // Ne pas rejeter 4xx
-      });
+    const response = await axios.get(url, {
+      headers: {
+        'x-api-key': API_KEY
+      },
+      timeout: 15000,
+      validateStatus: (status) => status < 500 // Ne pas rejeter 4xx
     });
     
     // Mettre en cache si succès

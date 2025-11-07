@@ -4,42 +4,38 @@ const PlayerCard = ({ player, mostPlayedCharacter }) => {
   if (!player) return null;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            {mostPlayedCharacter ? (
-              <CharacterImage 
-                characterId={mostPlayedCharacter.id}
-                characterName={mostPlayedCharacter.name}
-                size="xl"
-                className="shadow-lg"
-              />
-            ) : (
-              <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center shadow-lg">
-                <span className="text-2xl font-bold text-white">
-                  {player.nickname?.charAt(0).toUpperCase()}
-                </span>
-              </div>
-            )}
-            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
-          </div>
-          <div>
-            <h2 className="text-3xl font-bold text-black mb-1">{player.nickname}</h2>
-            <div className="flex items-center space-x-4 text-sm text-gray-600">
-              <span>ID: {player.userNum}</span>
-              <span className="px-2 py-1 bg-gray-100 rounded text-xs font-medium">En ligne</span>
-              {mostPlayedCharacter && (
-                <span className="px-2 py-1 bg-red-100 text-red-600 rounded text-xs font-medium">
-                  Main: {mostPlayedCharacter.name}
-                </span>
-              )}
+    <div className="bg-black/30 backdrop-blur-sm border border-red-500/30 rounded-2xl p-4 sm:p-6 lg:p-8 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4 lg:space-x-6">
+        <div className="flex-shrink-0 mx-auto sm:mx-0">
+          {mostPlayedCharacter ? (
+            <CharacterImage 
+              characterId={mostPlayedCharacter.id}
+              characterName={mostPlayedCharacter.name}
+              size="xl"
+              className="shadow-2xl ring-4 ring-white w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24"
+            />
+          ) : (
+            <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-red-600 to-red-800 rounded-2xl flex items-center justify-center shadow-2xl ring-4 ring-red-500/30">
+              <span className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">
+                {player.nickname?.charAt(0).toUpperCase()}
+              </span>
             </div>
-          </div>
+          )}
         </div>
-        <div className="text-right">
-          <div className="text-sm text-gray-500 mb-1">Dernière activité</div>
-          <div className="text-sm font-medium text-black">Aujourd'hui</div>
+        <div className="text-center sm:text-left flex-1">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-3 break-words">
+            {player.nickname}
+          </h1>
+          <div className="flex flex-wrap justify-center sm:justify-start items-center gap-2 sm:gap-3">
+            <span className="px-3 py-1 sm:px-4 sm:py-2 bg-white/20 backdrop-blur-sm text-white rounded-full font-semibold shadow-md border border-white/30 text-sm">
+              ID: {player.userNum}
+            </span>
+            {mostPlayedCharacter && (
+              <span className="px-3 py-1 sm:px-4 sm:py-2 bg-red-600 text-white rounded-full font-semibold shadow-md text-sm">
+                Main: {mostPlayedCharacter.name}
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </div>

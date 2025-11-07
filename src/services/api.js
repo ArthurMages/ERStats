@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:3001/api';
-const API_KEY = process.env.BSER_API_KEY;
+const API_KEY = process.env.REACT_APP_BSER_API_KEY;
 
 const api = axios.create({
   baseURL: API_BASE_URL
@@ -124,16 +124,22 @@ export const getPlayerFullData = async (nickname) => {
     
     const seasonId = await getCurrentSeason();
     
-    // Utiliser uniquement le mode Squad (3) pour normal et classé
+    // Mode 2 = Normal Squad, Mode 3 = Ranked Squad
     let normalStats, rankedStats, userGames, normalRank, rankedRank;
     
-    try { normalStats = await getUserStatsV2(userNum, seasonId, 3); } catch (e) { normalStats = null; }
+    try { normalStats = await getUserStatsV2(userNum, seasonId, 2); } catch (e) { normalStats = null; }
     try { rankedStats = await getUserStatsV2(userNum, seasonId, 3); } catch (e) { rankedStats = null; }
     try { userGames = await getUserGames(userNum); } catch (e) { userGames = null; }
-    try { normalRank = await getUserRank(userNum, seasonId, 3); } catch (e) { normalRank = null; }
+    try { normalRank = await getUserRank(userNum, seasonId, 2); } catch (e) { normalRank = null; }
     try { rankedRank = await getUserRank(userNum, seasonId, 3); } catch (e) { rankedRank = null; }
     
-    console.log('Additional data fetched');
+    console.log('Additional data fetched:', {
+      normalStats: !!normalStats,
+      rankedStats: !!rankedStats,
+      userGames: !!userGames,
+      normalRank: !!normalRank,
+      rankedRank: !!rankedRank
+    });
     
     return {
       user: userData.user,
