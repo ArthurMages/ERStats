@@ -126,32 +126,22 @@ Le projet est automatiquement déployé sur GitHub Pages via GitHub Actions lors
 
 ## 📸 Captures d'écran
 
-### Page d'accueil
 ![Page d'accueil](./screenshots/Capture%20d'écran%202025-11-07%20150507.png)
 
-### Recherche de joueur
 ![Recherche](./screenshots/Capture%20d'écran%202025-11-07%20150619.png)
 
-### Profil joueur - Vue d'ensemble
 ![Profil joueur](./screenshots/Capture%20d'écran%202025-11-07%20150650.png)
 
-### Statistiques détaillées - Mode Classé
 ![Stats Classé](./screenshots/Capture%20d'écran%202025-11-07%20150704.png)
 
-### Statistiques détaillées - Mode Normal
 ![Stats Normal](./screenshots/Capture%20d'écran%202025-11-07%20150738.png)
 
-### Historique des parties - Mode Classé
 ![Historique Classé](./screenshots/Capture%20d'écran%202025-11-07%20150755.png)
 
-### Historique des parties - Mode Normal
 ![Historique Normal](./screenshots/Capture%20d'écran%202025-11-07%20150816.png)
 
-### Page Classements
 ![Classements](./screenshots/Capture%20d'écran%202025-11-07%20150830.png)
 
-### Version Mobile - Accueil
 ![Mobile Accueil](./screenshots/Capture%20d'écran%202025-11-07%20151225.png)
 
-### Version Mobile - Profil joueur
 ![Mobile Profil](./screenshots/Capture%20d'écran%202025-11-07%20151240.png)
